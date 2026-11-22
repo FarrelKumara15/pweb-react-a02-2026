@@ -1,0 +1,107 @@
+[
+  {
+    "id": "demo-offer-a",
+    "company": "Demo Nusantara",
+    "role": "Frontend Intern",
+    "workMode": "Remote",
+    "status": "OFFER",
+    "requiredSkills": [
+      "React",
+      "TypeScript",
+      "CSS"
+    ],
+    "lastUpdatedAt": "2026-11-01T08:00:00.000Z",
+    "checklist": [
+      {
+        "id": "demo-offer-a-check",
+        "text": "Siapkan CV portfolio",
+        "done": true
+      },
+      {
+        "id": "demo-offer-a-check-2",
+        "text": "Pelajari perusahaan",
+        "done": false
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "demo-offer-a-log",
+        "timestamp": "2026-11-01T08:00:00.000Z",
+        "message": "Data contoh untuk pengujian integrasi."
+      }
+    ],
+    "salaryOffer": 5000000,
+    "cvVersion": "CV-v2.pdf",
+    "appliedDate": "2026-10-20"
+  },
+  {
+    "id": "demo-offer-b",
+    "company": "Demo Ruang Digital",
+    "role": "Frontend Intern",
+    "workMode": "Hybrid",
+    "status": "OFFER",
+    "requiredSkills": [
+      "React",
+      "TypeScript",
+      "CSS",
+      "Docker"
+    ],
+    "lastUpdatedAt": "2026-11-01T08:00:00.000Z",
+    "checklist": [
+      {
+        "id": "demo-offer-b-check",
+        "text": "Siapkan CV portfolio",
+        "done": true
+      },
+      {
+        "id": "demo-offer-b-check-2",
+        "text": "Pelajari perusahaan",
+        "done": false
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "demo-offer-b-log",
+        "timestamp": "2026-11-01T08:00:00.000Z",
+        "message": "Data contoh untuk pengujian integrasi."
+      }
+    ],
+    "salaryOffer": 6000000,
+    "cvVersion": "CV-v2.pdf",
+    "appliedDate": "2026-10-20"
+  },
+  {
+    "id": "demo-applied",
+    "company": "Demo Karya Kode",
+    "role": "Frontend Intern",
+    "workMode": "Remote",
+    "status": "APPLIED",
+    "requiredSkills": [
+      "React",
+      "TypeScript",
+      "CSS"
+    ],
+    "lastUpdatedAt": "2026-11-01T08:00:00.000Z",
+    "checklist": [
+      {
+        "id": "demo-applied-check",
+        "text": "Siapkan CV portfolio",
+        "done": true
+      },
+      {
+        "id": "demo-applied-check-2",
+        "text": "Pelajari perusahaan",
+        "done": false
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "demo-applied-log",
+        "timestamp": "2026-11-01T08:00:00.000Z",
+        "message": "Data contoh untuk pengujian integrasi."
+      }
+    ],
+    "cvVersion": "CV-v1.pdf",
+    "appliedDate": "2026-11-01"
+  }
+]
