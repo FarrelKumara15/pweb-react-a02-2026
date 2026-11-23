@@ -1,4 +1,172 @@
-import type { Application, NewApplication, WorkMode } from "../types";
+import type {
+  Application,
+  ApplicationStatus,
+  NewApplication,
+  WorkMode,
+} from "../types";
+
+export const ALLOWED_TRANSITIONS: Record<
+  ApplicationStatus,
+  ApplicationStatus[]
+> = {
+  WISHLIST: ["APPLIED", "REJECTED"],
+  APPLIED: ["SCREENING", "GHOSTED", "REJECTED"],
+  SCREENING: ["INTERVIEW", "GHOSTED", "REJECTED"],
+  INTERVIEW: ["OFFER", "GHOSTED", "REJECTED"],
+  GHOSTED: ["SCREENING", "REJECTED"],
+  OFFER: [],
+  REJECTED: [],
+};
+
+export function getAllowedNextStatuses(
+  status: ApplicationStatus,
+): ApplicationStatus[] {
+  return ALLOWED_TRANSITIONS[status];
+}
+
+export interface InterviewConflict {
+  a: Application;
+  b: Application;
+  diffMinutes: number;
+}
+
+export function findInterviewConflicts(
+  applications: Application[],
+): InterviewConflict[] {
+  const interviews = applications
+    .filter(
+      (app) =>
+        app.status === "INTERVIEW" &&
+        app.interviewDateTime &&
+        Number.isFinite(Date.parse(app.interviewDateTime)),
+    )
+    .sort(
+      (x, y) =>
+        Date.parse(x.interviewDateTime ?? "") -
+        Date.parse(y.interviewDateTime ?? ""),
+    );
+
+  const conflicts: InterviewConflict[] = [];
+  for (let i = 0; i < interviews.length; i++) {
+    const timeA = Date.parse(interviews[i].interviewDateTime ?? "");
+    for (let j = i + 1; j < interviews.length; j++) {
+      const timeB = Date.parse(interviews[j].interviewDateTime ?? "");
+      const diffMinutes = Math.round(Math.abs(timeB - timeA) / 60000);
+      if (diffMinutes < 60) {
+        conflicts.push({ a: interviews[i], b: interviews[j], diffMinutes });
+      }
+    }
+  }
+  return conflicts;
+}
+
+export function simulateGhosting15Days(
+  app: Application,
+  now = Date.now(),
+): Application {
+  if (!["APPLIED", "SCREENING"].includes(app.status)) return app;
+  const fifteenDaysMs = 15 * 24 * 60 * 60 * 1000;
+  const baseTime = Math.min(Date.parse(app.lastUpdatedAt) || now, now);
+  return {
+    ...app,
+    lastUpdatedAt: new Date(baseTime - fifteenDaysMs).toISOString(),
+  };
+}
+
+export interface StatusTransitionPayload {
+  nextStatus: ApplicationStatus;
+  cvVersion?: string;
+  appliedDate?: string;
+  interviewDateTime?: string;
+  salaryOffer?: number;
+  workMode?: WorkMode;
+}
+
+export function transitionApplicationStatus(
+  app: Application,
+  payload: StatusTransitionPayload,
+): Application {
+  if (!ALLOWED_TRANSITIONS[app.status].includes(payload.nextStatus)) {
+    return app;
+  }
+  const now = new Date().toISOString();
+  const next: Application = {
+    ...app,
+    status: payload.nextStatus,
+    lastUpdatedAt: now,
+    activityLogs: [
+      {
+        id: crypto.randomUUID(),
+        timestamp: now,
+        message: `Status berubah dari ${app.status} ke ${payload.nextStatus}.`,
+      },
+      ...app.activityLogs,
+    ],
+  };
+  if (payload.nextStatus === "APPLIED") {
+    next.cvVersion = payload.cvVersion?.trim();
+    next.appliedDate = payload.appliedDate;
+  } else if (payload.nextStatus === "INTERVIEW") {
+    next.interviewDateTime = payload.interviewDateTime;
+  } else if (payload.nextStatus === "OFFER") {
+    next.salaryOffer = payload.salaryOffer;
+    if (payload.workMode) next.workMode = payload.workMode;
+  }
+  return next;
+}
+
+export function addChecklistItem(app: Application, text: string): Application {
+  const trimmed = text.trim();
+  if (!trimmed) return app;
+  return {
+    ...app,
+    checklist: [
+      ...app.checklist,
+      { id: crypto.randomUUID(), text: trimmed, done: false },
+    ],
+  };
+}
+
+export function toggleChecklistItem(
+  app: Application,
+  itemId: string,
+): Application {
+  return {
+    ...app,
+    checklist: app.checklist.map((item) =>
+      item.id === itemId ? { ...item, done: !item.done } : item,
+    ),
+  };
+}
+
+export function deleteChecklistItem(
+  app: Application,
+  itemId: string,
+): Application {
+  return {
+    ...app,
+    checklist: app.checklist.filter((item) => item.id !== itemId),
+  };
+}
+
+export function addManualActivityLog(
+  app: Application,
+  message: string,
+): Application {
+  const trimmed = message.trim();
+  if (!trimmed) return app;
+  return {
+    ...app,
+    activityLogs: [
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+        message: trimmed,
+      },
+      ...app.activityLogs,
+    ],
+  };
+}
 
 export const normalize = (text: string) => text.trim().toLowerCase();
 export function uniqueSkills(skills: string[]) {
