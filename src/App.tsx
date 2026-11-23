@@ -43,6 +43,14 @@ export default function App() {
     );
     return true;
   }
+  function updateApplication(
+    id: string,
+    updater: (application: Application) => Application,
+  ) {
+    setApplications((current) =>
+      current.map((app) => (app.id === id ? updater(app) : app)),
+    );
+  }
   return (
     <>
       <header className="site-header">
@@ -133,6 +141,7 @@ export default function App() {
               applications={applications}
               skills={kaptenSkills}
               onDelete={remove}
+              onUpdate={updateApplication}
             />
           </>
         )}
